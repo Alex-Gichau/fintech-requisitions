@@ -1,65 +1,198 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState } from 'react';
+import { 
+  FileText, 
+  Clock, 
+  CheckCircle, 
+  XCircle, 
+  TrendingUp, 
+  PlusCircle,
+  ChevronRight,
+  ArrowUpRight
+} from 'lucide-react';
+import StatCard from '@/components/StatCard';
+import StatusBadge from '@/components/StatusBadge';
+import { useRequisitions } from '@/lib/RequisitionContext';
+import { useRole } from '@/lib/RoleContext';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
+import RequisitionDetailModal from '@/components/RequisitionDetailModal';
+import { Requisition } from '@/types';
+
+export default function Dashboard() {
+  const { user } = useRole();
+  const { requisitions } = useRequisitions();
+  const [selectedReq, setSelectedReq] = useState<Requisition | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewDetails = (req: Requisition) => {
+    setSelectedReq(req);
+    setIsModalOpen(true);
+  };
+
+  // Mini trend data
+  const miniTrendData = [
+    { day: 'Mon', val: 40000 },
+    { day: 'Tue', val: 30000 },
+    { day: 'Wed', val: 90000 },
+    { day: 'Thu', val: 45000 },
+    { day: 'Fri', val: 120000 },
+    { day: 'Sat', val: 20000 },
+    { day: 'Sun', val: 10000 },
+  ];
+
+  // Filter requisitions based on role
+  const displayedRequisitions = React.useMemo(() => {
+    if (user.role === 'CHURCH_GROUP') {
+      return requisitions.filter(req => req.requesterId === user.id);
+    }
+    return requisitions;
+  }, [requisitions, user.id, user.role]);
+
+  // Stats logic based on displayed data
+  const pendingCount = displayedRequisitions.filter(r => r.status.startsWith('PENDING')).length;
+  const approvedCount = displayedRequisitions.filter(r => r.status === 'APPROVED').length;
+  const totalAmount = displayedRequisitions
+    .filter(r => r.status === 'DISBURSED' || r.status === 'APPROVED')
+    .reduce((sum, r) => sum + r.amount, 0);
+
+  const stats = [
+    { title: 'Total Requisitions', value: displayedRequisitions.length.toString(), icon: FileText, description: 'Submitted this year' },
+    { title: 'Pending Approval', value: pendingCount.toString(), icon: Clock, description: 'Awaiting review' },
+    { title: 'Approved', value: approvedCount.toString(), icon: CheckCircle, description: 'Ready for disbursement' },
+    { title: 'Total Funded', value: `Ksh ${(totalAmount / 1000).toFixed(1)}K`, icon: TrendingUp, trend: { value: 12, isUp: true } },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex items-end justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground tracking-tight">Overview</h2>
+          <p className="text-muted-foreground mt-1 font-medium">Welcome back, {user.fullName}. Here's what's happening with your requisitions.</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <Link 
+          href="/requisitions/new"
+          className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
+        >
+          <PlusCircle className="w-4 h-4" />
+          New Requisition
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, i) => (
+          <StatCard key={i} {...stat} />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Requisitions */}
+        <div className="lg:col-span-2 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
+          <div className="p-6 border-b border-border flex items-center justify-between">
+            <h3 className="font-bold text-lg">Recent Requisitions</h3>
+            <Link href="/requisitions" className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+              View All <ChevronRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-accent/50 text-[10px] font-bold text-muted uppercase tracking-wider">
+                  <th className="px-6 py-3">ID</th>
+                  <th className="px-6 py-3">Title</th>
+                  <th className="px-6 py-3">Group</th>
+                  <th className="px-6 py-3">Amount</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Date</th>
+                  <th className="px-6 py-3"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {displayedRequisitions.slice(0, 5).map((req) => (
+                  <tr 
+                    key={req.id} 
+                    onClick={() => handleViewDetails(req)}
+                    className="hover:bg-accent/30 transition-colors group cursor-pointer"
+                  >
+                    <td className="px-6 py-4 text-xs font-bold text-primary">{req.id}</td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-semibold text-foreground">{req.title}</div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground font-medium">{req.requesterName}</td>
+                    <td className="px-6 py-4 text-sm font-bold text-foreground">
+                      Ksh {req.amount.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <StatusBadge status={req.status} />
+                    </td>
+                    <td className="px-6 py-4 text-xs text-muted-foreground font-medium">
+                      {new Date(req.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                        <ArrowUpRight className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </main>
+
+        <div className="bg-card border border-border rounded-2xl shadow-sm flex flex-col">
+          <div className="p-6 border-b border-border">
+            <h3 className="font-bold text-lg">Weekly Volume</h3>
+            <p className="text-xs text-muted-foreground font-medium mt-1">Funding activity over the last 7 days</p>
+          </div>
+          <div className="h-40 w-full p-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={miniTrendData}>
+                <Area type="monotone" dataKey="val" stroke="#1e3a8a" fill="#1e3a8a" fillOpacity={0.1} strokeWidth={2} />
+                <Tooltip 
+                  contentStyle={{ display: 'none' }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="p-6 pt-0 space-y-6">
+            <div className="flex items-center justify-between pt-4 border-t border-border">
+              <span className="text-xs font-bold text-foreground">Top Group</span>
+              <span className="text-xs font-bold text-primary">Youth Ministry</span>
+            </div>
+            {[
+              { title: 'Requisition Approved', desc: 'Youth Camp 2026 was approved by Admin', time: '2 hours ago', icon: CheckCircle, color: 'text-green-600 bg-green-50' },
+              { title: 'New Comment', desc: 'Finance added a comment to Sound System', time: '5 hours ago', icon: FileText, color: 'text-blue-600 bg-blue-50' },
+              { title: 'Funds Disbursed', desc: 'Ksh 75,000 sent to Outreach Group', time: '1 day ago', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
+              { title: 'Requisition Rejected', desc: 'Bible Study Materials was rejected', time: '2 days ago', icon: XCircle, color: 'text-red-600 bg-red-50' },
+            ].map((activity, i) => (
+              <div key={i} className="flex gap-4 items-start">
+                <div className={cn("p-2 rounded-lg shrink-0", activity.color)}>
+                  <activity.icon className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-foreground leading-none">{activity.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{activity.desc}</p>
+                  <span className="text-[10px] font-medium text-muted mt-2 block italic">{activity.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-auto p-6 pt-0">
+            <button className="w-full py-2.5 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:bg-accent hover:text-foreground transition-all">
+              View All Notifications
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <RequisitionDetailModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        requisition={selectedReq}
+      />
     </div>
   );
 }
