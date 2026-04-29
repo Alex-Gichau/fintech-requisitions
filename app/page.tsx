@@ -66,47 +66,47 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in duration-700">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-foreground tracking-tight">Overview</h2>
-          <p className="text-muted-foreground mt-1 font-medium">Welcome back, {user.fullName}. Here's what's happening with your requisitions.</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">Overview</h2>
+          <p className="hidden md:block text-muted-foreground mt-1 font-medium text-sm">Welcome back, {user.fullName}. Here's what's happening with your requisitions.</p>
         </div>
         <Link 
           href="/requisitions/new"
-          className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
+          className="bg-primary text-white px-4 py-2 md:px-5 md:py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
         >
           <PlusCircle className="w-4 h-4" />
-          New Requisition
+          New
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {stats.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Recent Requisitions */}
         <div className="lg:col-span-2 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <h3 className="font-bold text-lg">Recent Requisitions</h3>
-            <Link href="/requisitions" className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+          <div className="p-4 md:p-6 border-b border-border flex items-center justify-between">
+            <h3 className="font-bold text-base md:text-lg">Recent Requisitions</h3>
+            <Link href="/requisitions" className="text-primary text-[10px] md:text-xs font-bold flex items-center gap-1 hover:underline">
               View All <ChevronRight className="w-3 h-3" />
             </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-accent/50 text-[10px] font-bold text-muted uppercase tracking-wider">
-                  <th className="px-6 py-3">ID</th>
-                  <th className="px-6 py-3">Title</th>
-                  <th className="px-6 py-3">Group</th>
-                  <th className="px-6 py-3">Amount</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3"></th>
+                <tr className="bg-accent/50 text-[9px] md:text-[10px] font-bold text-muted uppercase tracking-wider">
+                  <th className="px-4 py-3 md:px-6 md:py-3">ID</th>
+                  <th className="px-4 py-3 md:px-6 md:py-3">Title</th>
+                  <th className="px-4 py-3 md:px-6 md:py-3 hidden sm:table-cell">Group</th>
+                  <th className="px-4 py-3 md:px-6 md:py-3">Amount</th>
+                  <th className="px-4 py-3 md:px-6 md:py-3">Status</th>
+                  <th className="px-6 py-3 hidden md:table-cell">Date</th>
+                  <th className="px-4 py-3 md:px-6 md:py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -116,23 +116,23 @@ export default function Dashboard() {
                     onClick={() => handleViewDetails(req)}
                     className="hover:bg-accent/30 transition-colors group cursor-pointer"
                   >
-                    <td className="px-6 py-4 text-xs font-bold text-primary">{req.id}</td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-semibold text-foreground">{req.title}</div>
+                    <td className="px-4 py-3 md:px-6 md:py-4 text-[10px] md:text-xs font-bold text-primary">{req.id}</td>
+                    <td className="px-4 py-3 md:px-6 md:py-4">
+                      <div className="text-xs md:text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{req.title}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground font-medium">{req.requesterName}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-foreground">
+                    <td className="px-4 py-3 md:px-6 md:py-4 text-xs text-muted-foreground font-medium hidden sm:table-cell">{req.requesterName}</td>
+                    <td className="px-4 py-3 md:px-6 md:py-4 text-xs md:text-sm font-bold text-foreground">
                       Ksh {req.amount.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 md:px-6 md:py-4">
                       <StatusBadge status={req.status} />
                     </td>
-                    <td className="px-6 py-4 text-xs text-muted-foreground font-medium">
+                    <td className="px-6 py-4 text-xs text-muted-foreground font-medium hidden md:table-cell">
                       {new Date(req.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all opacity-0 group-hover:opacity-100">
-                        <ArrowUpRight className="w-4 h-4" />
+                    <td className="px-4 py-3 md:px-6 md:py-4 text-right">
+                      <button className="p-1.5 md:p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                        <ArrowUpRight className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </button>
                     </td>
                   </tr>
@@ -143,9 +143,9 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-card border border-border rounded-2xl shadow-sm flex flex-col">
-          <div className="p-6 border-b border-border">
-            <h3 className="font-bold text-lg">Weekly Volume</h3>
-            <p className="text-xs text-muted-foreground font-medium mt-1">Funding activity over the last 7 days</p>
+          <div className="p-4 md:p-6 border-b border-border">
+            <h3 className="font-bold text-base md:text-lg">Weekly Volume</h3>
+            <p className="text-[10px] md:text-xs text-muted-foreground font-medium mt-1">Activity trend</p>
           </div>
           <div className="h-40 w-full p-2">
             <ResponsiveContainer width="100%" height="100%">
