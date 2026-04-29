@@ -40,22 +40,13 @@ The system maintains a permanent audit trail of all actions, allowing for quick 
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **State**: React Context API
 
-## 🏃 Getting Started
+## 🚀 Deployment
 
-First, install the dependencies:
+This project is configured for automatic deployment to **GitHub Pages** via GitHub Actions.
 
-```bash
-npm install
-```
+### Setup Instructions
+1.  **Repository Settings**: Go to your GitHub repository -> **Settings** -> **Pages**.
+2.  **Build and Deployment**: Set **Source** to `GitHub Actions`.
+3.  **Push to Main**: Any push to the `main` branch will trigger the `.github/workflows/deploy.yml` workflow to build and deploy the site.
 
-Then, run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
----
-
-Built with ❤️ for St Andrews Church.
+The site will be available at: `https://Alex-Gichau.github.io/fintech-requisitions`

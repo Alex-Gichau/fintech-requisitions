@@ -28,4 +28,4 @@ A requisition system for St Andrews to facilitate church groups in applying for 
 ## Technical Rules
 - Use `useRequisitions` hook for data access.
 - Use `useRole` hook for user identity and role-based logic.
-- Maintain premium, "Church-themed" aesthetics in all new components.
+- Maintain premium, "Church-themed" aesthetics in all new components
