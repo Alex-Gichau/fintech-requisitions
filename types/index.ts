@@ -22,9 +22,10 @@ export interface Requisition {
 
 export interface User {
   id: string;
-  name: string;
+  name?: string;
+  fullName: string;
   email: string;
   role: UserRole;
-  group: string;
+  group?: string;
   systemCode?: string | null;
 }

@@ -37,7 +37,7 @@ const MINISTRIES = [
 
 export default function AddUserModal({ isOpen, onClose, onAdd, initialData }: AddUserModalProps) {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     role: 'CHURCH_GROUP' as UserRole,
     group: MINISTRIES[0],
@@ -47,14 +47,14 @@ export default function AddUserModal({ isOpen, onClose, onAdd, initialData }: Ad
   React.useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name,
+        fullName: initialData.fullName || initialData.name || '',
         email: initialData.email,
         role: initialData.role,
         group: initialData.group,
         authCode: '', // Always reset for edit/add for security
       });
     } else {
-      setFormData({ name: '', email: '', role: 'CHURCH_GROUP', group: MINISTRIES[0], authCode: '' });
+      setFormData({ fullName: '', email: '', role: 'CHURCH_GROUP', group: MINISTRIES[0], authCode: '' });
     }
   }, [initialData, isOpen]);
 
@@ -124,8 +124,8 @@ export default function AddUserModal({ isOpen, onClose, onAdd, initialData }: Ad
                   </label>
                   <input
                     required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     className="w-full px-4 py-3 bg-accent/30 border border-transparent rounded-xl text-sm focus:outline-none focus:bg-white focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all"
                     placeholder="Enter user's full name"
                   />

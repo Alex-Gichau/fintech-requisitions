@@ -24,12 +24,12 @@ export default function UsersPage() {
   const { user } = useRole();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [users, setUsers] = React.useState([
-    { id: '1', name: 'Alex Gichau', email: 'alex@standrews.com', role: 'ADMIN' as UserRole, group: 'System', systemCode: null },
-    { id: '2', name: 'John Doe', email: 'john@standrews.com', role: 'CHURCH_GROUP' as UserRole, group: 'Youth Ministry', systemCode: null },
-    { id: '3', name: 'Jane Smith', email: 'jane@standrews.com', role: 'APPROVER_L1' as UserRole, group: 'Elders Board', systemCode: 'SA-L1-4921' },
-    { id: '4', name: 'Robert Finance', email: 'robert@standrews.com', role: 'FINANCE' as UserRole, group: 'Finance Dept', systemCode: null },
-    { id: '5', name: 'Mary Worship', email: 'mary@standrews.com', role: 'CHURCH_GROUP' as UserRole, group: 'Worship Team', systemCode: null },
-    { id: '6', name: 'David District', email: 'david@standrews.com', role: 'APPROVER_L2' as UserRole, group: 'District 1', systemCode: 'SA-L2-8832' },
+    { id: '1', fullName: 'Alex Gichau', email: 'alex@standrews.com', role: 'ADMIN' as UserRole, group: 'System', systemCode: null },
+    { id: '2', fullName: 'John Doe', email: 'john@standrews.com', role: 'CHURCH_GROUP' as UserRole, group: 'Youth Ministry', systemCode: null },
+    { id: '3', fullName: 'Jane Smith', email: 'jane@standrews.com', role: 'APPROVER_L1' as UserRole, group: 'Elders Board', systemCode: 'SA-L1-4921' },
+    { id: '4', fullName: 'Robert Finance', email: 'robert@standrews.com', role: 'FINANCE' as UserRole, group: 'Finance Dept', systemCode: null },
+    { id: '5', fullName: 'Mary Worship', email: 'mary@standrews.com', role: 'CHURCH_GROUP' as UserRole, group: 'Worship Team', systemCode: null },
+    { id: '6', fullName: 'David District', email: 'david@standrews.com', role: 'APPROVER_L2' as UserRole, group: 'District 1', systemCode: 'SA-L2-8832' },
   ]);
   
   const [selectedUser, setSelectedUser] = React.useState<any>(null);
@@ -142,7 +142,7 @@ export default function UsersPage() {
                         <UserCircle className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="text-xs md:text-sm font-bold text-foreground">{u.name}</div>
+                        <div className="text-xs md:text-sm font-bold text-foreground">{u.fullName}</div>
                         <div className="text-[9px] md:hidden text-muted-foreground font-medium">{u.group}</div>
                       </div>
                     </div>
@@ -223,7 +223,7 @@ export default function UsersPage() {
                     <ShieldCheck className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-foreground">{app.name}</h4>
+                    <h4 className="text-sm font-bold text-foreground">{app.fullName}</h4>
                     <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{app.role.replace('_', ' ')}</span>
                   </div>
                 </div>
