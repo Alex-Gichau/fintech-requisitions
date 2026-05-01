@@ -122,12 +122,12 @@ export default function ReportsPage() {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fill: '#64748b', fontSize: 12 }}
-                  tickFormatter={(value) => `Ksh ${value / 1000}k`}
+                  tickFormatter={(value: any) => `Ksh ${Number(value || 0) / 1000}k`}
                 />
                 <Tooltip 
                   cursor={{ fill: '#f8fafc' }}
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value) => [`Ksh ${value.toLocaleString()}`, 'Total Funding']}
+                  formatter={(value: any) => [`Ksh ${Number(value || 0).toLocaleString()}`, 'Total Funding']}
                 />
                 <Bar dataKey="value" fill="#1e3a8a" radius={[6, 6, 0, 0]} barSize={40} />
               </BarChart>
@@ -172,7 +172,9 @@ export default function ReportsPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground font-medium">Completion Rate</span>
               <span className="text-sm font-bold text-green-600">
-                {((requisitions.filter(r => r.status === 'DISBURSED').length / requisitions.length) * 100).toFixed(0)}%
+                {requisitions.length > 0 
+                  ? ((requisitions.filter(r => r.status === 'DISBURSED').length / requisitions.length) * 100).toFixed(0) 
+                  : '0'}%
               </span>
             </div>
           </div>
@@ -210,7 +212,7 @@ export default function ReportsPage() {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fill: '#64748b', fontSize: 12 }}
-                  tickFormatter={(value) => `Ksh ${value / 1000}k`}
+                  tickFormatter={(value: any) => `Ksh ${Number(value || 0) / 1000}k`}
                 />
                 <Tooltip 
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
