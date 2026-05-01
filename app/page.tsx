@@ -23,7 +23,7 @@ import { Requisition } from '@/types';
 
 export default function Dashboard() {
   const { user } = useRole();
-  const { requisitions, getBudgetForGroup } = useRequisitions();
+  const { requisitions, getBudgetForGroup, budgets } = useRequisitions();
   const [selectedReq, setSelectedReq] = useState<Requisition | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -148,18 +148,27 @@ export default function Dashboard() {
             );
           })() : (
             <>
-              {['ICT', 'Youth Ministry', 'Worship Team'].map(group => {
+              {(user.role === 'ADMIN' || user.role === 'FINANCE' ? budgets : budgets.slice(0, 3)).map(b => {
+                const group = b.group;
                 const { allocated, spent, remaining } = getBudgetForGroup(group);
                 const percentage = allocated > 0 ? (spent / allocated) * 100 : 0;
                 return (
                   <div key={group} className="p-4 bg-white border border-border/60 rounded-xl shadow-sm hover:border-primary/20 transition-all">
                     <div className="flex justify-between items-start mb-3">
                       <span className="text-xs font-bold text-foreground">{group}</span>
-                      <span className="text-[10px] font-bold text-primary">{percentage.toFixed(1)}%</span>
+                      <span className={cn(
+                        "text-[10px] font-bold",
+                        percentage > 90 ? "text-red-500" : percentage > 70 ? "text-amber-500" : "text-primary"
+                      )}>
+                        {percentage.toFixed(1)}%
+                      </span>
                     </div>
                     <div className="h-1.5 bg-accent/50 rounded-full overflow-hidden mb-3">
                       <div 
-                        className="h-full bg-primary transition-all duration-1000" 
+                        className={cn(
+                          "h-full transition-all duration-1000",
+                          percentage > 90 ? "bg-red-500" : percentage > 70 ? "bg-amber-500" : "bg-primary"
+                        )} 
                         style={{ width: `${Math.min(percentage, 100)}%` }} 
                       />
                     </div>
