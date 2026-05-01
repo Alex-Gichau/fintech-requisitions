@@ -23,7 +23,7 @@ import { Requisition } from '@/types';
 
 export default function Dashboard() {
   const { user } = useRole();
-  const { requisitions } = useRequisitions();
+  const { requisitions, getBudgetForGroup } = useRequisitions();
   const [selectedReq, setSelectedReq] = useState<Requisition | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -85,6 +85,100 @@ export default function Dashboard() {
         {stats.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
+      </div>
+
+      {/* Budget Tracking Section */}
+      <div className="bg-card border border-border rounded-2xl shadow-sm p-5 md:p-6 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 blur-3xl pointer-events-none" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg text-foreground">Budget Tracking</h3>
+              <p className="text-xs text-muted-foreground font-medium">Real-time visualization of spent vs allocated funds.</p>
+            </div>
+          </div>
+          <div className="px-3 py-1.5 bg-accent/50 rounded-lg text-[10px] font-bold text-muted uppercase tracking-wider border border-border/50">
+            FY 2026 Allocation
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {user.role === 'CHURCH_GROUP' || user.group ? (() => {
+            const groupName = user.group || 'Youth Ministry';
+            const { allocated, spent, remaining } = getBudgetForGroup(groupName);
+            const percentage = allocated > 0 ? (spent / allocated) * 100 : 0;
+            
+            return (
+              <div className="lg:col-span-3 p-5 bg-accent/20 rounded-2xl border border-border/40">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm border border-border">
+                      <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground">{groupName} Budget</h4>
+                      <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Approved Deductions Active</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xl font-black text-foreground">Ksh {remaining.toLocaleString()}</div>
+                    <div className="text-[10px] font-bold text-muted uppercase">Remaining</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                    <span className="text-muted-foreground">Spent: Ksh {spent.toLocaleString()}</span>
+                    <span className="text-primary">Allocated: Ksh {allocated.toLocaleString()}</span>
+                  </div>
+                  <div className="h-3 bg-white rounded-full overflow-hidden border border-border shadow-inner">
+                    <div 
+                      className={cn(
+                        "h-full transition-all duration-1000 ease-out rounded-full",
+                        percentage > 90 ? "bg-red-500" : percentage > 70 ? "bg-amber-500" : "bg-primary"
+                      )}
+                      style={{ width: `${Math.min(percentage, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })() : (
+            <>
+              {['ICT', 'Youth Ministry', 'Worship Team'].map(group => {
+                const { allocated, spent, remaining } = getBudgetForGroup(group);
+                const percentage = allocated > 0 ? (spent / allocated) * 100 : 0;
+                return (
+                  <div key={group} className="p-4 bg-white border border-border/60 rounded-xl shadow-sm hover:border-primary/20 transition-all">
+                    <div className="flex justify-between items-start mb-3">
+                      <span className="text-xs font-bold text-foreground">{group}</span>
+                      <span className="text-[10px] font-bold text-primary">{percentage.toFixed(1)}%</span>
+                    </div>
+                    <div className="h-1.5 bg-accent/50 rounded-full overflow-hidden mb-3">
+                      <div 
+                        className="h-full bg-primary transition-all duration-1000" 
+                        style={{ width: `${Math.min(percentage, 100)}%` }} 
+                      />
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <div className="text-[9px] font-bold text-muted uppercase">Remaining</div>
+                        <div className="text-sm font-black text-foreground">Ksh {(remaining/1000).toFixed(0)}k</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[9px] font-bold text-muted uppercase">Allocated</div>
+                        <div className="text-[10px] font-medium text-muted-foreground">Ksh {(allocated/1000).toFixed(0)}k</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">

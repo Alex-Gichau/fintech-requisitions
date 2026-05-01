@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   Fingerprint, 
   Scan, 
-  Keypad, 
   X, 
   ShieldCheck,
   ShieldAlert,

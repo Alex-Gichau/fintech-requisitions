@@ -2,6 +2,7 @@ export type UserRole = 'CHURCH_GROUP' | 'APPROVER_L1' | 'APPROVER_L2' | 'FINANCE
 
 export type RequisitionStatus = 
   | 'DRAFT' 
+  | 'SUBMITTED' 
   | 'PENDING_L1' 
   | 'PENDING_L2' 
   | 'APPROVED' 
@@ -28,4 +29,9 @@ export interface User {
   role: UserRole;
   group?: string;
   systemCode?: string | null;
+}
+
+export interface Budget {
+  group: string;
+  allocated: number;
 }
